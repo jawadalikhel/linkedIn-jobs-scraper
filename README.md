@@ -69,3 +69,4 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 # linkedIn-jobs-scraper
 # linkedIn-jobs-scraper
 # linkedin-scraper
+# linkedin-scraper
