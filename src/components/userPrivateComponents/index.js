@@ -1,78 +1,65 @@
 import React, { Component } from 'react';
+import LinkedInConnect from '../auth/ConnectToLinkedIn/index';
 
 export default class LandingPage extends Component {
     state = {
-        code: ''
+        code: '',
+        logedIn: false
     }
 
     getToken = async() =>{
+        let accountCode = this.props.location.search;
 
-        if(this.props.location.search !== ''){
-            let accountCode = await this.props.location.search.slice(6, this.props.location.search.length - 16);
-            await console.log(accountCode, '<---- accountCode')
+        if(accountCode !== ''){
             this.setState({
                 code: accountCode
             })
-
-
-            await fetch('http://localhost:8000/test', {
+            const fetchTest = await fetch('https://us-central1-linkedin-scrapper-6eac2.cloudfunctions.net/saveLinkedInTokenToDB', {
                 method: 'POST',
-                credentials: 'include',
-                body: JSON.stringify(this.state),
-                headers:{
-                    'Content-Type': 'application/json'
-                    }
+                body: JSON.stringify(this.state.code),
             })
-
-            // await response.json()
-            .then((result) =>{
-                console.log(result, '<---- resullltt')
+    
+            fetchTest.json().then((result) =>{
+                this.setState({
+                    logedIn: true
+                })
             })
-            // const parsedResponse = await response.json();
-            // console.log(jsonRequest, '<---- jsonRequest')
-            // let userToken = await fetch (`https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code=${accountCode}&redirect_uri=https://linkedin-scrapper-6eac2.firebaseapp.com/userPrivate&client_id=86js0zudl3o6gz&client_secret=nEw9jiA5h5iWD7jc`, {
-            //     method: 'POST',
-            //     credentials: 'include',
-            //     body: JSON.stringify(accountCode),
-            //     headers:{
-            //         'Content-Type': 'application/json'
-            //         }
-            // })
-            // await console.log('helloo testing TESTING 1')
-
-            // await console.log(userToken, 'userToken # 1')
-
-            // let dataJson = await userToken.json();
-            // await console.log(dataJson, '<----- ')
-        }else{
-            console.log('no code here')
         }
+        else{
+            this.setState({
+                logedIn: false
+            })
+        }
+    }
 
-            // const response = await fetch('https://localhost:8080/test', {
-            //     method: 'POST',
-            //     credentials: 'include',
-            //     body: JSON.stringify(accountCode),
-            //     headers:{
-            //         'Content-Type': 'application/json'
-            //         }
-            // });
-            // console.log(response, '<--- response')
+    jobSearch = async () =>{
+        // let job = 'software'
+        // const fetchJobs = await fetch ('https://us-central1-linkedin-scrapper-6eac2.cloudfunctions.net/findJobs', {
+        //     method: 'POST',
+        //     body: JSON.stringify(job),
+        // })
+        // console.log(fetchJobs, '<--- fetchJobs')
 
-            // console.log( '<----- responseresponse')
-            // const parsedResponse = await response.json();
+        // let josnFetch = await fetchJobs.json()
+        // console.log(josnFetch, '<--- josnFetch')
+        // josnFetch.then((result) =>{
+        //     console.log(result, '<------ resulllt')
+        // }).catch((err) =>{
+        //     console.log(err, '<---- errrrorrrr')
+        // })
     }
 
     componentDidMount(){
         this.getToken();
+        this.jobSearch();
     }
 
     render() {
-        // const authUrl = 'https://www.linkedin.com/oauth/v2/authorization?response_type=code&state=987654321&scope=r_liteprofile&client_id=86js0zudl3o6gz&redirect_uri=http://localhost:3000/userPrivate';
         return (
             <div>
-                Welcome User
-
-                {/* <a href={authUrl}>Connect to LinkedIn</a> */}
+                {
+                    (this.state.logedIn === true) ? <h1>Welcome User</h1> : <LinkedInConnect />
+                }
             </div>
         )
     }
